@@ -62,10 +62,32 @@ nav a {
     text-align: center;
 }
 
-.skills {
+.about {
+    text-align: center;
     position: absolute;
-    top: 101.5%;
+    top: 101.9%;
     left: 46%;
+}
+
+.skills {
+    text-align: center;
+    position: absolute;
+    top: 211.9%;
+    left: 46%;
+}
+
+.portfolio {
+    text-align: center;
+    position: absolute;
+    top: 321.9%;
+    left: 43%;
+}
+
+.contact {
+    text-align: center;
+    position: absolute;
+    top: 431.9%;
+    left: 44%;
 }
 
 .sectOne{
@@ -81,10 +103,14 @@ nav a {
 }
 
 .sectFour{
-    background-image: url("../images/space21.jpg");
+    background-image: url("../images/space23.jpg");
 }
 
+.sectFive {
+    background-image: url("../images/space21.jpg")
+}
 .name-header{
+    text-align: center;
     position: absolute;
     top: 40%;
     left: 40%;
