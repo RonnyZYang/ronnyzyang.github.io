@@ -47,9 +47,11 @@ nav a {
     height: 100%;
     background-size: cover;
     background-attachment: fixed;
+    text-align: center;
 }
 
 .background{
+    text-align: center;
     height: 100%;
     background-color: rgba(17, 17, 17, 0.8);
 }
@@ -106,6 +108,7 @@ nav a {
 .sectFive {
     background-image: url("../images/space24.jpg")
 }
+
 .name-header{
     text-align: center;
     position: absolute;
