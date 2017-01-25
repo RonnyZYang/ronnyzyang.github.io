@@ -62,8 +62,10 @@ nav a {
     text-align: center;
 }
 
-.subOne {
-    pos
+.skills {
+    position: absolute;
+    top: 101.5%;
+    left: 46%;
 }
 
 .sectOne{
