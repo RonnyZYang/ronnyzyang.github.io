@@ -60,34 +60,31 @@ nav a {
     color: #C5C3C6;
     font-size: 25px;
     text-align: center;
+    width: 100%;
 }
 
 .about {
-    text-align: center;
     position: absolute;
-    top: 101.9%;
-    left: 46%;
+    top: 101.6%;
+    left: 47%;
 }
 
 .skills {
-    text-align: center;
     position: absolute;
-    top: 211.9%;
-    left: 46%;
+    top: 211.7%;
+    left: 47.2%;
 }
 
 .portfolio {
-    text-align: center;
     position: absolute;
-    top: 321.9%;
-    left: 43%;
+    top: 321.7%;
+    left: 44.1%
 }
 
 .contact {
-    text-align: center;
     position: absolute;
-    top: 431.9%;
-    left: 44%;
+    top: 431.7%;
+    left: 45%;
 }
 
 .sectOne{
@@ -107,7 +104,7 @@ nav a {
 }
 
 .sectFive {
-    background-image: url("../images/space21.jpg")
+    background-image: url("../images/space24.jpg")
 }
 .name-header{
     text-align: center;
