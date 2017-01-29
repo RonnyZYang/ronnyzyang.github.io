@@ -116,7 +116,7 @@ nav a {
     text-align: center;
     position: absolute;
     top: 40%;
-    left: 36.5%;
+    left: 40.5%;
 }
 
 #major-name{
@@ -137,10 +137,10 @@ nav a {
     
 }
 
-#ugly{
+.ugly{
     position: absolute;
-    top: 123%;
-    left: 5%;
+    top: 122%;
+    left: 36%;
 }
 
 .about-me-container{
