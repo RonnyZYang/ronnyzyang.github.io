@@ -12,12 +12,6 @@ html, body {
     padding: 0;
 }
 
-.super {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
 h1, h2, h3, h4, h0, h5, h6, p {
     margin-bottom: 20px;
     margin: 0;
@@ -94,22 +88,28 @@ nav a {
 
 .sectOne{
     background-image: url("../images/space4.jpg");
+    position: relative;
+    
 }
 
 .sectTwo{
     background-image: url("../images/space22.jpg");
+    position: relative;
 }
 
 .sectThree{
     background-image: url("../images/space9.jpg");
+    position: relative;
 }
 
 .sectFour{
     background-image: url("../images/space23.jpg");
+    position: relative;
 }
 
 .sectFive {
-    background-image: url("../images/space24.jpg")
+    background-image: url("../images/space24.jpg");
+    position: relative;
 }
 
 .name-header{
@@ -139,14 +139,14 @@ nav a {
 
 .ugly{
     position: absolute;
-    top: 122%;
-    left: 36%;
+    top: 10%;
+    left: 16%;
 }
 
 .about-me-container{
     position: absolute;
-    top: 140%;
-    left: 5%;
+    top: 30%;
+    left: 10%;
     height: 60%;
     width: 20%;
 }
@@ -154,6 +154,7 @@ nav a {
 #about-me-header{
     font-size: 25pt;
     color: #C5C3C6;
+    text-align: left;
 }
 
 #about-me-txt{
@@ -166,13 +167,14 @@ nav a {
     position: absolute;
     height: 60%;
     width: 20%;
-    top: 140%;
+    top: 30%;
     left: 76%;
 }
 
 #details-header{
     font-size: 25pt;
     color: #C5C3C6;
+    text-align: left
 }
 
 #details-txt{
