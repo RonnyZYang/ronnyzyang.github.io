@@ -49,15 +49,19 @@ General styles
     background-size: cover;
 }
 
+.intro-block {
+    padding: 22% 0 25%;
+}
+
 .main-name {
     position: relative;
     font-size: 4.5rem;
-    padding: 23% 0 0.5% 0;
+    padding: 0 0 0.5% 0;
 }
 
 .traits {
     font-size: 2rem;
-    padding: 0.1% 0 25%; 
+    padding: 0.1% 0; 
 }
 
 .split {
