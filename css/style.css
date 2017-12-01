@@ -85,7 +85,7 @@ General styles
 .contact {
     background-image: url("../images/space5.jpg");
     background-size: auto;
-    height: 70%;
+    height: 100%;
     font-size: 2em;
     background-attachment: fixed;
     background-position: center;
@@ -105,3 +105,78 @@ General styles
     width: 9%;
     padding: 1% 45% 0 45%;
 }
+
+/*--------------------------------------------------------------
+If no grid support, limit width to 50em and center align
+--------------------------------------------------------------*/
+/*
+@supports not (display: grid) {
+    .page-title,
+    .main-content,
+    .sidebar {
+        max-width: 50em;
+        margin: 0 auto;
+	}
+}
+*/
+
+/*--------------------------------------------------------------
+CSS Grid layout for wider screens, when browser supports grid:
+--------------------------------------------------------------*/
+
+/*
+@supports (display: grid) {
+  @media screen and (min-width: 800px) {
+    
+  	.site {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr 3fr;
+      grid-template-areas:
+        "content-head content-head"
+        "main header"
+        "main sidebar"
+        "footer footer";
+    }
+    
+    .masthead {
+      grid-area: header;
+    }
+    
+    .page-title {
+      grid-area: content-head;
+    }
+    
+    .main-content {
+      grid-area: main;
+    }
+    
+    .sidebar {
+      grid-area: sidebar;
+    }
+		
+    .colophon {
+      grid-area: footer;
+    }
+    
+	}
+*/
+
+/*
+@media screen and (min-width: 1200px) {
+    .site {
+        display: grid;
+        grid-template-areas:
+            "intro-slot"
+            "experience-split-slot"
+            "expereine-slot"
+            "contact-split-slot"
+            "contact-slot"
+    }
+    
+    .intro {
+        grid-area: intro-slot;
+    }
+    
+    #expereince-split
+}*/
