@@ -15,10 +15,10 @@ h2,
 h3 {
 	margin: 0;
 	padding: 1em 0;
-	background-color: #05B9E9;
+	color: #05B9E9;
 	display: table-cell; 
 	vertical-align: middle;
-	font-size: 20em;
+	font-size: 10em;
 	font-style: oblique
 }
 
