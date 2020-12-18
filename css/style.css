@@ -15,95 +15,10 @@ h2,
 h3 {
 	margin: 0;
 	padding: 1em 0;
-}
-
-p {
-	margin: 0;
-	padding: 1em 0;
-}
-
-hr {
-    text-align:center; 
-    margin: 0 auto;
-    width: 40%; /* Length */
-    height: 1px; /* Thickness */
-    color: #C5C3C6;
-    background-color: #C5C3C6; /* Colour */
-
-}
-
-/*--------------------------------------------------------------
-General styles
---------------------------------------------------------------*/
-.cover {
-    background-color: rgba(17, 17, 17, 0.8);
-    height: 100%;
-}
-
-.intro {
-    background-image: url("../images/space1.1.png");
-    height:100%;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.intro-block {
-    padding: 22% 0 25%;
-}
-
-.main-name {
-    position: relative;
-    font-size: 4.5rem;
-    padding: 0 0 0.5% 0;
-}
-
-.traits {
-    font-size: 2rem;
-    padding: 0.1% 0; 
-}
-
-.split {
-    background-color: rgba(0,0,0,.9);
-}
-
-.experience {
-    background-image: url("../images/space2.jpg");
-    height:145%;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.ringed-skill {
-    height: auto;
-    width: 12%;
-}
-
-.contact {
-    background-image: url("../images/space5.jpg");
-    background-size: auto;
-    height: 100%;
-    font-size: 2em;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/*
-.self {
-    height: auto;
-    width: 30%;
-    padding: 0% 0% 0% 5%
-}
-*/
-
-.icon {
-    height: auto;
-    width: 9%;
-    padding: 1% 45% 0 45%;
+	background-color: #05B9E9;
+	display: table-cell; 
+	vertical-align: middle;
+	font-size: 20em;
 }
 
 /*--------------------------------------------------------------
