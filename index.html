@@ -1,17 +1,95 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Ronny Yang</title>
-        <meta name="google-site-verification" content="w0Zl-Fc0m2iZn9GcX8nxy83oUbU20DG2-kqF1lSrZzM" />
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-    </head>
-    
-    <div class="site">
-        <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scoreboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #ffb6b9, #8ec5fc, #e0c3fc, #ff9a9e, #fad0c4, #ffdde1);
+            background-size: 400% 400%;
+            animation: gradientBG 8s ease infinite, moveBackground 10s linear infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes moveBackground {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.05) rotate(3deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .scoreboard {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            width: 60%;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            animation: flicker 1.5s infinite alternate;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            font-size: 26px;
+            position: relative;
+        }
+        .player {
+            font-weight: bold;
+            position: relative;
+        }
+        .score {
+            font-size: 50px;
+            margin-top: 10px;
+            color: #ff4f4f;
+            animation: bounce 1s infinite alternate;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard">
+        <div class="title">Scoreboard</div>
+        <div class="scores">
             <div>
-                <p></p>
+                <div class="player">Mr. Yang</div>
+                <div class="score" id="score1">3</div>
             </div>
-        </body>
+            <div>
+                <div class="player">Aarush</div>
+                <div class="score" id="score2">3</div>
+            </div>
+        </div>
     </div>
+</body>
 </html>
