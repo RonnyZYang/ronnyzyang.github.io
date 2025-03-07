@@ -76,6 +76,19 @@
             100% { transform: translateY(-10px); }
         }
     </style>
+    <script>
+        function changeBackground() {
+            const colors = [
+                ['#ff6b6b', '#ffb6b9', '#8ec5fc', '#e0c3fc'],
+                ['#ff9a9e', '#fad0c4', '#ffdde1', '#8ec5fc'],
+                ['#74ebd5', '#acb6e5', '#ff9a9e', '#fad0c4'],
+                ['#ff9966', '#ff5e62', '#ffb6b9', '#e0c3fc']
+            ];
+            const randomGradient = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.background = `linear-gradient(45deg, ${randomGradient.join(', ')})`;
+        }
+        document.addEventListener('click', changeBackground);
+    </script>
 </head>
 <body>
     <div class="scoreboard">
@@ -83,11 +96,11 @@
         <div class="scores">
             <div>
                 <div class="player">Mr. Yang</div>
-                <div class="score" id="score1">3</div>
+                <div class="score" id="score1">0</div>
             </div>
             <div>
                 <div class="player">Aarush</div>
-                <div class="score" id="score2">3</div>
+                <div class="score" id="score2">0</div>
             </div>
         </div>
     </div>
