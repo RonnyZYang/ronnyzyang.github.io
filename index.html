@@ -18,6 +18,7 @@
             margin: 0;
             overflow: hidden;
             position: relative;
+            flex-direction: column;
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -39,21 +40,11 @@
             position: relative;
             overflow: hidden;
             animation: pulse 2s infinite alternate;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
             100% { transform: scale(1.05); }
-        }
-        .title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
-            animation: flicker 1.5s infinite alternate;
-        }
-        @keyframes flicker {
-            0% { opacity: 1; }
-            100% { opacity: 0.8; }
         }
         .scores {
             display: flex;
@@ -75,6 +66,37 @@
             0% { transform: translateY(0); }
             100% { transform: translateY(-10px); }
         }
+        .moving-button {
+            position: absolute;
+            padding: 10px 20px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            animation: moveAround 3s infinite alternate ease-in-out;
+        }
+        @keyframes moveAround {
+            0% { top: 10%; left: 10%; }
+            25% { top: 10%; left: 80%; }
+            50% { top: 80%; left: 80%; }
+            75% { top: 80%; left: 10%; }
+            100% { top: 10%; left: 10%; }
+        }
+        .message {
+            display: none;
+            font-size: 60px;
+            font-weight: bold;
+            color: black;
+            margin-top: 20px;
+            text-transform: uppercase;
+            animation: flash 1s infinite alternate;
+        }
+        @keyframes flash {
+            0% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
     </style>
     <script>
         function changeBackground() {
@@ -88,21 +110,37 @@
             document.body.style.background = `linear-gradient(45deg, ${randomGradient.join(', ')})`;
         }
         document.addEventListener('click', changeBackground);
+        
+        function explodeScoreboard() {
+            const scoreboard = document.querySelector('.scoreboard');
+            const button = document.querySelector('.moving-button');
+            const message = document.querySelector('.message');
+            
+            scoreboard.style.transform = 'scale(2) rotate(20deg)';
+            scoreboard.style.opacity = '0';
+            button.style.display = 'none';
+            
+            setTimeout(() => {
+                scoreboard.style.display = 'none';
+                message.style.display = 'block';
+            }, 500);
+        }
     </script>
 </head>
 <body>
     <div class="scoreboard">
-        <div class="title">Scoreboard</div>
         <div class="scores">
             <div>
                 <div class="player">Mr. Yang</div>
-                <div class="score" id="score1">3</div>
+                <div class="score" id="score1">0</div>
             </div>
             <div>
                 <div class="player">Aarush</div>
-                <div class="score" id="score2">3</div>
+                <div class="score" id="score2">0</div>
             </div>
         </div>
     </div>
+    <button class="moving-button" onclick="explodeScoreboard()">Don't touch me</button>
+    <div class="message">LOOK WHAT YOU DID!</div>
 </body>
 </html>
