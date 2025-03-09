@@ -94,31 +94,29 @@
             100% { opacity: 0; }
         }
         canvas {
-            display: none;
             background: black;
             border: 3px solid white;
         }
     </style>
     <script>
         function showNope(event) {
-            let nope = document.createElement("div");
-            nope.className = "nope";
-            nope.textContent = "Nope!";
-            nope.style.left = `${event.clientX}px`;
-            nope.style.top = `${event.clientY}px`;
-            document.body.appendChild(nope);
-            setTimeout(() => nope.remove(), 1000);
-        }
-        document.addEventListener("click", (event) => {
             let button = document.querySelector(".moving-button");
             let rect = button.getBoundingClientRect();
             if (
-                event.clientX >= rect.left - 50 && event.clientX <= rect.right + 50 &&
-                event.clientY >= rect.top - 50 && event.clientY <= rect.bottom + 50
+                event.clientX < rect.left - 20 || event.clientX > rect.right + 20 || 
+                event.clientY < rect.top - 20 || event.clientY > rect.bottom + 20
             ) {
-                showNope(event);
+                let nope = document.createElement("div");
+                nope.className = "nope";
+                nope.textContent = "Nope!";
+                nope.style.left = `${event.clientX}px`;
+                nope.style.top = `${event.clientY}px`;
+                document.body.appendChild(nope);
+                setTimeout(() => nope.remove(), 1000);
             }
-        });
+        }
+        document.addEventListener("click", showNope);
+
         function startSnakeGame() {
             document.querySelector('.scoreboard').style.display = 'none';
             document.querySelector('.moving-button').style.display = 'none';
@@ -127,15 +125,23 @@
             canvas.width = 400;
             canvas.height = 400;
             document.body.appendChild(canvas);
-            canvas.style.display = 'block';
             let ctx = canvas.getContext("2d");
             let box = 20;
             let snake = [{x: 10 * box, y: 10 * box}];
             let direction = "RIGHT";
-            let food = {
-                x: Math.floor(Math.random() * 20) * box,
-                y: Math.floor(Math.random() * 20) * box
-            };
+            function generateFood() {
+                let newFood;
+                let isOnSnake;
+                do {
+                    newFood = {
+                        x: Math.floor(Math.random() * 20) * box,
+                        y: Math.floor(Math.random() * 20) * box
+                    };
+                    isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
+                } while (isOnSnake);
+                return newFood;
+            }
+            let food = generateFood();
             document.addEventListener("keydown", changeDirection);
             function changeDirection(event) {
                 if (event.keyCode == 37 && direction != "RIGHT") direction = "LEFT";
@@ -159,17 +165,15 @@
                 if (direction == "RIGHT") snakeX += box;
                 if (direction == "DOWN") snakeY += box;
                 if (snakeX == food.x && snakeY == food.y) {
-                    food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+                    food = generateFood();
                 } else {
                     snake.pop();
                 }
                 let newHead = {x: snakeX, y: snakeY};
-                snake.unshift(newHead);
-                if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height) {
-                    clearInterval(game);
-                    alert("Game Over!");
+                if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y) || snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height) {
                     location.reload();
                 }
+                snake.unshift(newHead);
             }
             let game = setInterval(draw, 100);
         }
@@ -177,8 +181,8 @@
 </head>
 <body>
     <div class="scoreboard">
-        <div class="player">Mr. Yang <span class="score" id="score1">0</span></div>
-        <div class="player">Aarush <span class="score" id="score2">0</span></div>
+        <div class="player">Mr. Yang <span class="score" id="score1">3</span></div>
+        <div class="player">Aarush <span class="score" id="score2">3</span></div>
     </div>
     <button class="moving-button" onclick="startSnakeGame()">DON'T TOUCH ME</button>
 </body>
