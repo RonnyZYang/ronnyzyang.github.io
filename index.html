@@ -118,7 +118,10 @@
         document.addEventListener("click", showNope);
 
         function startSnakeGame() {
-            document.querySelector('.scoreboard').style.display = 'none';
+            const scoreboard = document.querySelector('.scoreboard');
+            if (scoreboard) {
+                scoreboard.style.display = 'none';
+            }
             document.querySelector('.moving-button').style.display = 'none';
             let canvas = document.createElement("canvas");
             canvas.id = "gameCanvas";
