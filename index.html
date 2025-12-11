@@ -1,192 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scoreboard & Snake Game</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background: linear-gradient(45deg, #ff6b6b, #ffb6b9, #8ec5fc, #e0c3fc, #ff9a9e, #fad0c4, #ffdde1);
-            background-size: 400% 400%;
-            animation: gradientBG 8s ease infinite;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
-            flex-direction: column;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .scoreboard {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            width: 450px;
-            text-align: center;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .player {
-            flex: 1;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 15px;
-            text-transform: none;
-            text-align: center;
-        }
-        .player:first-child {
-            background: #ff4f4f;
-        }
-        .player:last-child {
-            background: #4fafff;
-        }
-        .score {
-            font-size: 40px;
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-        .moving-button {
-            position: absolute;
-            padding: 12px 24px;
-            background-color: red;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            animation: moveAround 3s infinite alternate ease-in-out;
-            text-transform: uppercase;
-        }
-        @keyframes moveAround {
-            0% { top: 10%; left: 10%; }
-            25% { top: 10%; left: 80%; }
-            50% { top: 80%; left: 80%; }
-            75% { top: 80%; left: 10%; }
-            100% { top: 10%; left: 10%; }
-        }
-        .nope {
-            position: absolute;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
-            opacity: 1;
-            animation: fadeOut 1s forwards;
-        }
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        canvas {
-            background: black;
-            border: 3px solid white;
-        }
-    </style>
-    <script>
-        function showNope(event) {
-            let button = document.querySelector(".moving-button");
-            let rect = button.getBoundingClientRect();
-            if (
-                event.clientX < rect.left - 20 || event.clientX > rect.right + 20 || 
-                event.clientY < rect.top - 20 || event.clientY > rect.bottom + 20
-            ) {
-                let nope = document.createElement("div");
-                nope.className = "nope";
-                nope.textContent = "Nope!";
-                nope.style.left = `${event.clientX}px`;
-                nope.style.top = `${event.clientY}px`;
-                document.body.appendChild(nope);
-                setTimeout(() => nope.remove(), 1000);
-            }
-        }
-        document.addEventListener("click", showNope);
+  <meta charset="UTF-8" />
+  <title>Crack the Code</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-        function startSnakeGame() {
-            document.querySelector('.scoreboard').style.display = 'none';
-            document.querySelector('.moving-button').style.display = 'none';
-            let canvas = document.createElement("canvas");
-            canvas.id = "gameCanvas";
-            canvas.width = 400;
-            canvas.height = 400;
-            document.body.appendChild(canvas);
-            let ctx = canvas.getContext("2d");
-            let box = 20;
-            let snake = [{x: 10 * box, y: 10 * box}];
-            let direction = "RIGHT";
-            function generateFood() {
-                let newFood;
-                let isOnSnake;
-                do {
-                    newFood = {
-                        x: Math.floor(Math.random() * 20) * box,
-                        y: Math.floor(Math.random() * 20) * box
-                    };
-                    isOnSnake = snake.some(segment => segment.x === newFood.x && segment.y === newFood.y);
-                } while (isOnSnake);
-                return newFood;
-            }
-            let food = generateFood();
-            document.addEventListener("keydown", changeDirection);
-            function changeDirection(event) {
-                if (event.keyCode == 37 && direction != "RIGHT") direction = "LEFT";
-                else if (event.keyCode == 38 && direction != "DOWN") direction = "UP";
-                else if (event.keyCode == 39 && direction != "LEFT") direction = "RIGHT";
-                else if (event.keyCode == 40 && direction != "UP") direction = "DOWN";
-            }
-            function draw() {
-                ctx.fillStyle = "black";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "red";
-                ctx.fillRect(food.x, food.y, box, box);
-                ctx.fillStyle = "lime";
-                for (let i = 0; i < snake.length; i++) {
-                    ctx.fillRect(snake[i].x, snake[i].y, box, box);
-                }
-                let snakeX = snake[0].x;
-                let snakeY = snake[0].y;
-                if (direction == "LEFT") snakeX -= box;
-                if (direction == "UP") snakeY -= box;
-                if (direction == "RIGHT") snakeX += box;
-                if (direction == "DOWN") snakeY += box;
-                if (snakeX == food.x && snakeY == food.y) {
-                    food = generateFood();
-                } else {
-                    snake.pop();
-                }
-                let newHead = {x: snakeX, y: snakeY};
-                if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y) || snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height) {
-                    location.reload();
-                }
-                snake.unshift(newHead);
-            }
-            let game = setInterval(draw, 100);
-        }
-    </script>
+    .container {
+      background: #ffffff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+
+    p {
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      text-align: center;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #007bff;
+      color: #ffffff;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .error {
+      color: #b00020;
+      text-align: center;
+      min-height: 1.2em;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-    <!-- Write your comments here 
-    <div class="scoreboard">
-        <div class="player">Mr. Yang <span class="score" id="score1">23</span></div>
-        <div class="player">Aarush <span class="score" id="score2">25</span></div>
-    </div>
-    -->
-    <button class="moving-button" onclick="startSnakeGame()">DON'T TOUCH ME</button>
-    
+  <div class="container">
+    <h1>Crack the Code</h1>
+    <p>Enter the correct 10-number code to unlock the message.</p>
+
+    <form id="codeForm">
+      <div class="inputs">
+        <input type="number" id="code1" required />
+        <input type="number" id="code2" required />
+        <input type="number" id="code3" required />
+        <input type="number" id="code4" required />
+        <input type="number" id="code5" required />
+        <input type="number" id="code6" required />
+        <input type="number" id="code7" required />
+        <input type="number" id="code8" required />
+        <input type="number" id="code9" required />
+        <input type="number" id="code10" required />
+      </div>
+
+      <div class="error" id="errorMsg"></div>
+
+      <button type="submit">Unlock</button>
+    </form>
+  </div>
+
+  <script>
+    const correctCode = [6, 10, 3, 2, 8, 6, 44, 15, 47, 49];
+
+    document.getElementById('codeForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const errorMsg = document.getElementById('errorMsg');
+      errorMsg.textContent = '';
+
+      const userInputs = [];
+      for (let i = 1; i <= 10; i++) {
+        const value = document.getElementById('code' + i).value.trim();
+        userInputs.push(Number(value));
+      }
+
+      let allCorrect = true;
+      for (let i = 0; i < correctCode.length; i++) {
+        if (userInputs[i] !== correctCode[i]) {
+          allCorrect = false;
+          break;
+        }
+      }
+
+      if (allCorrect) {
+        window.location.href = 'success.html';
+      } else {
+        errorMsg.textContent = 'Incorrect code. Try again!';
+      }
+    });
+  </script>
 </body>
 </html>
