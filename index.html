@@ -1,134 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Crack the Code</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      background: #ffffff;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      max-width: 400px;
-      width: 100%;
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
-
-    p {
-      text-align: center;
-      font-size: 0.95rem;
-    }
-
-    .inputs {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-    }
-
-    input[type="number"] {
-      width: 100%;
-      padding: 6px;
-      text-align: center;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      background: #007bff;
-      color: #ffffff;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    .error {
-      color: #b00020;
-      text-align: center;
-      min-height: 1.2em;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Crack the Code</h1>
-    <p>Enter the correct 10-number code to unlock the message.</p>
-
-    <form id="codeForm">
-      <div class="inputs">
-        <input type="number" id="code1" required />
-        <input type="number" id="code2" required />
-        <input type="number" id="code3" required />
-        <input type="number" id="code4" required />
-        <input type="number" id="code5" required />
-        <input type="number" id="code6" required />
-        <input type="number" id="code7" required />
-        <input type="number" id="code8" required />
-        <input type="number" id="code9" required />
-        <input type="number" id="code10" required />
-      </div>
-
-      <div class="error" id="errorMsg"></div>
-
-      <button type="submit">Unlock</button>
-    </form>
-  </div>
-
-  <script>
-    const correctCode = [6, 10, 3, 2, 8, 6, 44, 15, 47, 49];
-
-    document.getElementById('codeForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const errorMsg = document.getElementById('errorMsg');
-      errorMsg.textContent = '';
-
-      const userInputs = [];
-      for (let i = 1; i <= 10; i++) {
-        const value = document.getElementById('code' + i).value.trim();
-        userInputs.push(Number(value));
-      }
-
-      let allCorrect = true;
-      for (let i = 0; i < correctCode.length; i++) {
-        if (userInputs[i] !== correctCode[i]) {
-          allCorrect = false;
-          break;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Your Own Connections Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;700;800&display=swap');
+        
+        body {
+            font-family: 'Libre+Franklin', sans-serif;
+            background-color: #fff;
+            color: #1a1a1a;
         }
-      }
 
-      if (allCorrect) {
-        window.location.href = 'success.html';
-      } else {
-        errorMsg.textContent = 'Incorrect code. Try again!';
-      }
-    });
-  </script>
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .card {
+            aspect-ratio: 1 / 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: #efefe6;
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+
+        .card.selected {
+            background-color: #5a594e;
+            color: white;
+        }
+
+        .card:hover:not(.selected) {
+            background-color: #e2e2d8;
+        }
+
+        .solved-row {
+            grid-column: span 4;
+            height: 80px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: pop 0.4s ease-out;
+            margin-bottom: 8px;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .level-0 { background-color: #f9df6d; }
+        .level-1 { background-color: #a0c35a; }
+        .level-2 { background-color: #b0c4ef; }
+        .level-3 { background-color: #ba81c5; }
+
+        .mistake-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #7f7f7f;
+            display: inline-block;
+            margin: 0 4px;
+        }
+        
+        .mistake-dot.empty {
+            background-color: #efefe6;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-center mb-2">Connections Game Builder</h1>
+        <p class="text-center text-gray-600 mb-8">Add one or more games for your class to play through.</p>
+        
+        <div id="games-container" class="space-y-12">
+            <!-- Games will be injected here -->
+        </div>
+
+        <div class="mt-10 flex flex-col items-center gap-4 pb-20 border-t pt-8">
+            <button onclick="addGameTemplate()" class="text-blue-600 font-bold hover:underline">
+                + Add Another Game Round
+            </button>
+            <button onclick="processAndStart()" class="bg-black text-white px-12 py-4 rounded-full font-bold text-lg hover:opacity-80 transition shadow-lg">
+                Start Playing (Round 1)
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="max-w-xl mx-auto hidden">
+        <header class="text-center mb-6">
+            <div id="round-indicator" class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Round 1</div>
+            <h2 class="text-2xl font-extrabold uppercase tracking-tighter">Connections</h2>
+            <p id="game-status" class="text-lg font-medium mt-2">Create four groups of four!</p>
+        </header>
+
+        <div id="solved-container"></div>
+        <div id="grid" class="game-grid mb-8"></div>
+
+        <div class="text-center mb-8" id="mistakes-ui">
+            <span class="mr-2 font-bold">Mistakes remaining:</span>
+            <span id="mistakes-container"></span>
+        </div>
+
+        <div class="flex justify-center gap-4" id="action-buttons">
+            <button onclick="shuffleGrid()" class="border-2 border-black px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition">Shuffle</button>
+            <button id="deselect-btn" onclick="deselectAll()" class="border-2 border-black px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition">Deselect All</button>
+            <button id="submit-btn" onclick="submitGuess()" class="border-2 border-black bg-black text-white px-8 py-2 rounded-full font-bold disabled:opacity-30 disabled:cursor-not-allowed" disabled>Submit</button>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div id="navigation-ui" class="hidden mt-8 flex flex-col items-center gap-4">
+            <button id="next-game-btn" onclick="goToNextGame()" class="bg-black text-white px-10 py-3 rounded-full font-bold hover:opacity-80 transition">
+                Next Game Round
+            </button>
+            <button onclick="location.reload()" class="text-gray-500 underline text-sm">Return to Editor</button>
+        </div>
+    </div>
+
+    <script>
+        let allGames = []; // Stores data for multiple games
+        let currentGameIndex = 0;
+        
+        // Current game state
+        let currentCategories = [];
+        let currentWords = [];
+        let selectedWords = [];
+        let mistakesRemaining = 4;
+        let solvedCategories = [];
+        let isGameOver = false;
+
+        const gamesContainer = document.getElementById('games-container');
+        const levelNames = ['Yellow', 'Green', 'Blue', 'Purple'];
+        const levelColors = ['border-yellow-400', 'border-green-500', 'border-blue-400', 'border-purple-500'];
+
+        function addGameTemplate() {
+            const gameNum = document.querySelectorAll('.game-setup-block').length + 1;
+            const gameDiv = document.createElement('div');
+            gameDiv.className = 'game-setup-block p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200';
+            
+            let html = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-black uppercase">Game Round ${gameNum}</h2>
+                    ${gameNum > 1 ? `<button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-sm font-bold">Remove Round</button>` : ''}
+                </div>
+                <div class="space-y-4">
+            `;
+
+            for (let i = 0; i < 4; i++) {
+                html += `
+                    <div class="p-4 border-l-8 rounded shadow-sm bg-white ${levelColors[i]}">
+                        <input type="text" placeholder="${levelNames[i]} Category Name" class="cat-name w-full p-2 mb-2 border rounded font-bold" required>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <input type="text" placeholder="Word 1" class="word-input w-full p-2 border rounded" required>
+                            <input type="text" placeholder="Word 2" class="word-input w-full p-2 border rounded" required>
+                            <input type="text" placeholder="Word 3" class="word-input w-full p-2 border rounded" required>
+                            <input type="text" placeholder="Word 4" class="word-input w-full p-2 border rounded" required>
+                        </div>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+            gameDiv.innerHTML = html;
+            gamesContainer.appendChild(gameDiv);
+        }
+
+        // Initialize with one game
+        addGameTemplate();
+
+        function processAndStart() {
+            const gameBlocks = document.querySelectorAll('.game-setup-block');
+            allGames = [];
+
+            let isValid = true;
+            gameBlocks.forEach((block) => {
+                const gameData = { categories: [], words: [] };
+                const catInputs = block.querySelectorAll('.cat-name');
+                const wordInputs = block.querySelectorAll('.word-input');
+
+                catInputs.forEach((catInput, i) => {
+                    if (!catInput.value.trim()) isValid = false;
+                    gameData.categories.push({ name: catInput.value.trim(), level: i });
+                    
+                    for (let j = 0; j < 4; j++) {
+                        const wordVal = wordInputs[i * 4 + j].value.trim();
+                        if (!wordVal) isValid = false;
+                        gameData.words.push({ text: wordVal, categoryId: i });
+                    }
+                });
+                allGames.push(gameData);
+            });
+
+            if (!isValid) {
+                alert("Please fill in all categories and words for every round.");
+                return;
+            }
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            loadGame(0);
+        }
+
+        function loadGame(index) {
+            currentGameIndex = index;
+            const data = allGames[index];
+            
+            // Reset State
+            currentCategories = data.categories;
+            currentWords = [...data.words];
+            selectedWords = [];
+            mistakesRemaining = 4;
+            solvedCategories = [];
+            isGameOver = false;
+
+            // UI Reset
+            document.getElementById('round-indicator').innerText = `Round ${index + 1} of ${allGames.length}`;
+            document.getElementById('game-status').innerText = "Create four groups of four!";
+            document.getElementById('solved-container').innerHTML = '';
+            document.getElementById('mistakes-ui').classList.remove('hidden');
+            document.getElementById('action-buttons').classList.remove('hidden');
+            document.getElementById('navigation-ui').classList.add('hidden');
+            
+            renderMistakes();
+            shuffleGrid();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            currentWords.forEach(word => {
+                const card = document.createElement('div');
+                card.className = `card ${selectedWords.includes(word) ? 'selected' : ''}`;
+                card.innerText = word.text;
+                card.onclick = () => toggleSelect(word);
+                grid.appendChild(card);
+            });
+
+            document.getElementById('submit-btn').disabled = selectedWords.length !== 4 || isGameOver;
+        }
+
+        function toggleSelect(word) {
+            if (isGameOver) return;
+            const index = selectedWords.indexOf(word);
+            if (index > -1) {
+                selectedWords.splice(index, 1);
+            } else if (selectedWords.length < 4) {
+                selectedWords.push(word);
+            }
+            renderGrid();
+        }
+
+        function deselectAll() {
+            selectedWords = [];
+            renderGrid();
+        }
+
+        function shuffleGrid() {
+            shuffleArray(currentWords);
+            renderGrid();
+        }
+
+        function renderMistakes() {
+            const container = document.getElementById('mistakes-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const dot = document.createElement('span');
+                dot.className = `mistake-dot ${i >= mistakesRemaining ? 'empty' : ''}`;
+                container.appendChild(dot);
+            }
+        }
+
+        function submitGuess() {
+            if (selectedWords.length !== 4 || isGameOver) return;
+
+            const categoryId = selectedWords[0].categoryId;
+            const isCorrect = selectedWords.every(w => w.categoryId === categoryId);
+
+            if (isCorrect) {
+                const solvedCategory = currentCategories[categoryId];
+                solvedCategories.push(solvedCategory);
+                const solvedTexts = selectedWords.map(w => w.text).join(', ');
+                
+                const solvedDiv = document.createElement('div');
+                solvedDiv.className = `solved-row level-${categoryId}`;
+                solvedDiv.innerHTML = `
+                    <div class="font-bold uppercase text-lg">${solvedCategory.name}</div>
+                    <div class="uppercase text-sm tracking-widest">${solvedTexts}</div>
+                `;
+                document.getElementById('solved-container').appendChild(solvedDiv);
+
+                currentWords = currentWords.filter(w => !selectedWords.includes(w));
+                selectedWords = [];
+                renderGrid();
+
+                if (solvedCategories.length === 4) {
+                    endGame(true);
+                }
+            } else {
+                const grid = document.getElementById('grid');
+                grid.classList.add('shake');
+                setTimeout(() => grid.classList.remove('shake'), 400);
+
+                mistakesRemaining--;
+                renderMistakes();
+
+                const counts = {};
+                selectedWords.forEach(w => counts[w.categoryId] = (counts[w.categoryId] || 0) + 1);
+                if (Object.values(counts).includes(3)) {
+                    showMessage("One away...");
+                }
+
+                if (mistakesRemaining === 0) {
+                    endGame(false);
+                }
+            }
+        }
+
+        function showMessage(msg) {
+            const status = document.getElementById('game-status');
+            const original = status.innerText;
+            status.innerText = msg;
+            setTimeout(() => { if(!isGameOver) status.innerText = original; }, 2000);
+        }
+
+        function endGame(won) {
+            isGameOver = true;
+            const status = document.getElementById('game-status');
+            status.innerText = won ? "Perfect!" : "Better luck next time!";
+            
+            document.getElementById('mistakes-ui').classList.add('hidden');
+            document.getElementById('action-buttons').classList.add('hidden');
+            
+            if (!won) {
+                revealRemaining();
+            } else {
+                showNavigation();
+            }
+        }
+
+        function revealRemaining() {
+            const unsolvedIds = [0,1,2,3].filter(id => !solvedCategories.find(sc => sc.level === id));
+            unsolvedIds.forEach((id, index) => {
+                setTimeout(() => {
+                    const catWords = currentWords.filter(w => w.categoryId === id);
+                    if (catWords.length === 0) return;
+
+                    const solvedDiv = document.createElement('div');
+                    solvedDiv.className = `solved-row level-${id}`;
+                    solvedDiv.innerHTML = `
+                        <div class="font-bold uppercase text-lg">${currentCategories[id].name}</div>
+                        <div class="uppercase text-sm tracking-widest">${catWords.map(w => w.text).join(', ')}</div>
+                    `;
+                    document.getElementById('solved-container').appendChild(solvedDiv);
+                    currentWords = currentWords.filter(w => w.categoryId !== id);
+                    renderGrid();
+                    
+                    if (index === unsolvedIds.length - 1) {
+                        setTimeout(showNavigation, 1000);
+                    }
+                }, index * 800);
+            });
+        }
+
+        function showNavigation() {
+            document.getElementById('navigation-ui').classList.remove('hidden');
+            const nextBtn = document.getElementById('next-game-btn');
+            
+            if (currentGameIndex >= allGames.length - 1) {
+                nextBtn.innerText = "Final Results";
+                nextBtn.onclick = () => alert("You've finished all rounds!");
+            } else {
+                nextBtn.innerText = `Next Round (${currentGameIndex + 2}/${allGames.length})`;
+                nextBtn.onclick = goToNextGame;
+            }
+        }
+
+        function goToNextGame() {
+            if (currentGameIndex < allGames.length - 1) {
+                loadGame(currentGameIndex + 1);
+            }
+        }
+    </script>
 </body>
 </html>
