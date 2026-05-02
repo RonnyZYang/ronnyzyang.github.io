@@ -260,7 +260,7 @@
     <script>
         let currentGrade = null;
         let currentLayer = 1;
-        let operativeName = "Operative";
+        let operativeName = "OPERATIVE";
 
         const verbs = ["rides", "chases", "paints", "whispers to", "studies", "guards", "befriends", "hides", "follows", "leads", "observes", "scans", "decodes", "juggles", "distracts", "rescues", "animates", "imagines", "builds", "tames", "flies with", "puzzles over", "unlocks", "commands", "captures", "protects", "fights", "dances with", "escapes", "detects", "mimics", "carries", "signals", "notices", "watches", "tracks", "hears", "finds"];
         const colors = ["crimson", "neon blue", "emerald", "midnight", "golden", "obsidian", "violet", "silver", "electric lime", "sapphire", "ruby", "jade", "amber", "onyx", "azure", "quartz", "cyber-pink", "plasma", "metallic", "translucent", "shadow", "lava", "glitch-green", "solar", "lunar", "toxic", "phantom", "cobalt", "tangerine", "turquoise"];
@@ -279,7 +279,7 @@
 
         function startBypass(grade) {
             const nameInput = document.getElementById('operative-name').value;
-            operativeName = nameInput.trim() || "Unknown Operative";
+            operativeName = (nameInput.trim() || "UNKNOWN OPERATIVE").toUpperCase();
             showEntryPage(grade);
         }
 
@@ -389,7 +389,8 @@
             const verb = verbs[Math.floor(Math.random() * verbs.length)];
             const color = colors[Math.floor(Math.random() * colors.length)];
             const animal = animals[Math.floor(Math.random() * animals.length)];
-            return `${operativeName} ${verb} the ${color} ${animal}`;
+            const phrase = `${operativeName} ${verb} the ${color} ${animal}`;
+            return phrase.toUpperCase();
         }
 
         function runTransition(targetStage) {
