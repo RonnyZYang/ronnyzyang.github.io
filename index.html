@@ -3,64 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Your Own Connections Game</title>
+    <title>Vault Breaker System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
         
         body {
-            font-family: 'Libre+Franklin', sans-serif;
-            background-color: #fff;
-            color: #1a1a1a;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .card {
-            aspect-ratio: 1 / 0.85;
+            font-family: 'JetBrains Mono', monospace;
+            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .vault-container {
+            background: linear-gradient(145deg, #23233a, #161625);
+            padding: 3rem;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(79, 70, 229, 0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #2d2d44;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vault-door-outer {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid #334155;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #1e293b;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .vault-handle {
+            width: 70%;
+            height: 10px;
+            background: #64748b;
+            border-radius: 5px;
+            position: absolute;
+            transition: transform 0.8s ease;
+        }
+
+        .vault-handle::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 70px;
+            background: #64748b;
+            top: -30px;
+            left: 50%;
+            margin-left: -5px;
+            border-radius: 5px;
+        }
+
+        /* Status Colors */
+        .status-locked .vault-door-outer { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+        .status-layer-1 .vault-door-outer { border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .status-unlocked .vault-door-outer { border-color: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+        .status-unlocked .vault-handle { transform: rotate(180deg); background: #10b981; }
+
+        .key-slot {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #38bdf8;
+            font-size: 1.25rem;
             text-align: center;
-            padding: 8px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            border-radius: 6px;
-            cursor: pointer;
-            background-color: #efefe6;
-            transition: all 0.1s ease;
-            user-select: none;
+            transition: all 0.3s ease;
         }
 
-        .card.selected {
-            background-color: #5a594e;
-            color: white;
+        .key-slot:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+            background: #1e293b;
         }
 
-        .card:hover:not(.selected) {
-            background-color: #e2e2d8;
+        .key-slot.error {
+            border-color: #ef4444;
+            color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+            background: #2d1a1a;
         }
 
-        .solved-row {
-            grid-column: span 4;
-            height: 80px;
-            border-radius: 6px;
+        .key-slot.success {
+            border-color: #10b981;
+            color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+            background: #1a2d1a;
+        }
+
+        .hidden { display: none; }
+
+        .layer-transition-overlay {
+            position: absolute;
+            inset: 0;
+            background: #0f172a;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: pop 0.4s ease-out;
-            margin-bottom: 8px;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
         }
 
-        @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .layer-transition-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(56, 189, 248, 0.1);
+            opacity: 0.5;
+            pointer-events: none;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
         }
 
         .shake {
@@ -74,347 +149,292 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        .level-0 { background-color: #f9df6d; }
-        .level-1 { background-color: #a0c35a; }
-        .level-2 { background-color: #b0c4ef; }
-        .level-3 { background-color: #ba81c5; }
-
-        .mistake-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #7f7f7f;
-            display: inline-block;
-            margin: 0 4px;
+        .progress-bar-inner {
+            height: 100%;
+            background: #38bdf8;
+            width: 0%;
+            transition: width 1.5s ease-in-out;
         }
-        
-        .mistake-dot.empty {
-            background-color: #efefe6;
+
+        .secret-content {
+            border: 2px dashed #10b981;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 1rem;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <!-- Setup Screen -->
-    <div id="setup-screen" class="max-w-3xl mx-auto">
-        <h1 class="text-3xl font-extrabold text-center mb-2">Connections Game Builder</h1>
-        <p class="text-center text-gray-600 mb-8">Add one or more games for your class to play through.</p>
+    <div class="vault-container" id="vault-interface">
+        <div class="scanline"></div>
         
-        <div id="games-container" class="space-y-12">
-            <!-- Games will be injected here -->
+        <!-- Transition Screen -->
+        <div id="transition-overlay" class="layer-transition-overlay">
+            <div id="transition-text" class="text-sky-400 font-bold mb-4 animate-pulse">DECRYPTING LAYER 01...</div>
+            <div class="w-64 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                <div id="progress-bar" class="progress-bar-inner"></div>
+            </div>
+            <div id="transition-subtext" class="text-[10px] text-slate-500 mt-2 text-center">INITIALIZING LAYER 02 PROTOCOLS</div>
         </div>
 
-        <div class="mt-10 flex flex-col items-center gap-4 pb-20 border-t pt-8">
-            <button onclick="addGameTemplate()" class="text-blue-600 font-bold hover:underline">
-                + Add Another Game Round
+        <!-- Vault Header/Visual -->
+        <div id="door-status" class="status-locked">
+            <div class="vault-door-outer">
+                <div class="vault-handle"></div>
+            </div>
+        </div>
+
+        <!-- Home Page (Grade Selection) -->
+        <div id="home-page" class="text-center">
+            <h1 class="text-2xl font-bold text-sky-400 mb-2 uppercase tracking-widest">Vault Access</h1>
+            <p class="text-slate-400 text-sm mb-6 uppercase">Enter Operative Designation</p>
+            
+            <input type="text" id="operative-name" class="w-full p-3 mb-6 bg-slate-800 border border-slate-600 rounded-lg text-center focus:border-sky-400 outline-none transition" placeholder="ENTER YOUR NAME">
+
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="startBypass(6)" class="group relative py-4 bg-slate-800 border border-slate-600 rounded-lg overflow-hidden transition hover:bg-slate-700">
+                    <span class="relative z-10 font-bold tracking-widest">SECURITY CLEARANCE GRADE 06</span>
+                    <div class="absolute inset-0 bg-indigo-500/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                </button>
+                <button onclick="startBypass(7)" class="group relative py-4 bg-slate-800 border border-slate-600 rounded-lg overflow-hidden transition hover:bg-slate-700">
+                    <span class="relative z-10 font-bold tracking-widest">SECURITY CLEARANCE GRADE 07</span>
+                    <div class="absolute inset-0 bg-emerald-500/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Entry Page (Key Bypass) -->
+        <div id="entry-page" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="goHome()" class="text-xs text-slate-500 hover:text-sky-400 transition">
+                    &lt; TERMINATE_SESSION
+                </button>
+                <div class="flex flex-col items-end">
+                    <span id="level-indicator" class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 text-sky-400 font-bold mb-1"></span>
+                    <span id="layer-indicator" class="text-[10px] text-slate-500 font-bold">SECURITY_LAYER: 01</span>
+                </div>
+            </div>
+
+            <h2 id="bypass-text" class="text-sm font-bold text-slate-200 mb-6 text-center uppercase tracking-widest">Primary Bypass Sequence</h2>
+
+            <div class="grid grid-cols-2 gap-4" id="slots-container">
+                <div>
+                    <label id="label-1" class="block text-[10px] text-slate-500 mb-1 uppercase">Key 1</label>
+                    <input type="number" id="key-1" class="key-slot w-full p-3 rounded-md" placeholder="00" oninput="this.classList.remove('error', 'success')">
+                </div>
+                <div>
+                    <label id="label-2" class="block text-[10px] text-slate-500 mb-1 uppercase">Key 2</label>
+                    <input type="number" id="key-2" class="key-slot w-full p-3 rounded-md" placeholder="00" oninput="this.classList.remove('error', 'success')">
+                </div>
+                <div>
+                    <label id="label-3" class="block text-[10px] text-slate-500 mb-1 uppercase">Key 3</label>
+                    <input type="number" id="key-3" class="key-slot w-full p-3 rounded-md" placeholder="00" oninput="this.classList.remove('error', 'success')">
+                </div>
+                <div>
+                    <label id="label-4" class="block text-[10px] text-slate-500 mb-1 uppercase">Key 4</label>
+                    <input type="number" id="key-4" class="key-slot w-full p-3 rounded-md" placeholder="00" oninput="this.classList.remove('error', 'success')">
+                </div>
+            </div>
+
+            <button id="submit-btn" onclick="validateKeys()" class="w-full mt-8 py-4 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg shadow-lg shadow-sky-900/20 transition-all active:scale-95">
+                EXECUTE OVERRIDE
             </button>
-            <button onclick="processAndStart()" class="bg-black text-white px-12 py-4 rounded-full font-bold text-lg hover:opacity-80 transition shadow-lg">
-                Start Playing (Round 1)
+
+            <div id="feedback" class="mt-6 p-4 rounded-md text-sm text-center border hidden font-bold"></div>
+        </div>
+
+        <!-- Success Terminal -->
+        <div id="success-page" class="hidden text-center">
+            <h2 class="text-emerald-400 font-bold text-xl mb-4 tracking-tighter animate-pulse">SYSTEM COMPROMISED</h2>
+            <div class="secret-content mb-6">
+                <p class="text-[10px] text-slate-500 uppercase mb-2">Decrypted Passphrase:</p>
+                <p id="final-phrase" class="text-emerald-300 font-bold text-lg leading-tight italic"></p>
+            </div>
+            <button onclick="goHome()" class="text-xs py-2 px-4 bg-slate-800 rounded border border-slate-700 hover:bg-slate-700 transition">
+                CLOSE CONNECTION
             </button>
-        </div>
-    </div>
-
-    <!-- Game Screen -->
-    <div id="game-screen" class="max-w-xl mx-auto hidden">
-        <header class="text-center mb-6">
-            <div id="round-indicator" class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Round 1</div>
-            <h2 class="text-2xl font-extrabold uppercase tracking-tighter">Connections</h2>
-            <p id="game-status" class="text-lg font-medium mt-2">Create four groups of four!</p>
-        </header>
-
-        <div id="solved-container"></div>
-        <div id="grid" class="game-grid mb-8"></div>
-
-        <div class="text-center mb-8" id="mistakes-ui">
-            <span class="mr-2 font-bold">Mistakes remaining:</span>
-            <span id="mistakes-container"></span>
-        </div>
-
-        <div class="flex justify-center gap-4" id="action-buttons">
-            <button onclick="shuffleGrid()" class="border-2 border-black px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition">Shuffle</button>
-            <button id="deselect-btn" onclick="deselectAll()" class="border-2 border-black px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition">Deselect All</button>
-            <button id="submit-btn" onclick="submitGuess()" class="border-2 border-black bg-black text-white px-8 py-2 rounded-full font-bold disabled:opacity-30 disabled:cursor-not-allowed" disabled>Submit</button>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div id="navigation-ui" class="hidden mt-8 flex flex-col items-center gap-4">
-            <button id="next-game-btn" onclick="goToNextGame()" class="bg-black text-white px-10 py-3 rounded-full font-bold hover:opacity-80 transition">
-                Next Game Round
-            </button>
-            <button onclick="location.reload()" class="text-gray-500 underline text-sm">Return to Editor</button>
         </div>
     </div>
 
     <script>
-        let allGames = []; // Stores data for multiple games
-        let currentGameIndex = 0;
-        
-        // Current game state
-        let currentCategories = [];
-        let currentWords = [];
-        let selectedWords = [];
-        let mistakesRemaining = 4;
-        let solvedCategories = [];
-        let isGameOver = false;
+        let currentGrade = null;
+        let currentLayer = 1;
+        let operativeName = "Operative";
 
-        const gamesContainer = document.getElementById('games-container');
-        const levelNames = ['Yellow', 'Green', 'Blue', 'Purple'];
-        const levelColors = ['border-yellow-400', 'border-green-500', 'border-blue-400', 'border-purple-500'];
+        const verbs = ["rides", "chases", "paints", "whispers to", "studies", "guards", "befriends", "hides", "follows", "leads", "observes", "scans", "decodes", "juggles", "distracts", "rescues", "animates", "imagines", "builds", "tames", "flies with", "puzzles over", "unlocks", "commands", "captures", "protects", "fights", "dances with", "escapes", "detects", "mimics", "carries", "signals", "notices", "watches", "tracks", "hears", "finds"];
+        const colors = ["crimson", "neon blue", "emerald", "midnight", "golden", "obsidian", "violet", "silver", "electric lime", "sapphire", "ruby", "jade", "amber", "onyx", "azure", "quartz", "cyber-pink", "plasma", "metallic", "translucent", "shadow", "lava", "glitch-green", "solar", "lunar", "toxic", "phantom", "cobalt", "tangerine", "turquoise"];
+        const animals = ["falcon", "panther", "owl", "wolf", "cobra", "dragon", "octopus", "eagle", "tiger", "lynx", "raven", "shark", "bear", "fox", "stag", "phoenix", "mantis", "beetle", "kraken", "viper", "cheetah", "elephant", "orca", "bat", "hawk", "lion", "rhino", "dolphin", "turtle", "wasp"];
 
-        function addGameTemplate() {
-            const gameNum = document.querySelectorAll('.game-setup-block').length + 1;
-            const gameDiv = document.createElement('div');
-            gameDiv.className = 'game-setup-block p-6 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200';
-            
-            let html = `
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-black uppercase">Game Round ${gameNum}</h2>
-                    ${gameNum > 1 ? `<button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-sm font-bold">Remove Round</button>` : ''}
-                </div>
-                <div class="space-y-4">
-            `;
-
-            for (let i = 0; i < 4; i++) {
-                html += `
-                    <div class="p-4 border-l-8 rounded shadow-sm bg-white ${levelColors[i]}">
-                        <input type="text" placeholder="${levelNames[i]} Category Name" class="cat-name w-full p-2 mb-2 border rounded font-bold" required>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            <input type="text" placeholder="Word 1" class="word-input w-full p-2 border rounded" required>
-                            <input type="text" placeholder="Word 2" class="word-input w-full p-2 border rounded" required>
-                            <input type="text" placeholder="Word 3" class="word-input w-full p-2 border rounded" required>
-                            <input type="text" placeholder="Word 4" class="word-input w-full p-2 border rounded" required>
-                        </div>
-                    </div>
-                `;
+        const vaultKeys = {
+            6: {
+                layer1: [3, 4, 53, 56],
+                layer2: [13, 36, 108, 216]
+            },
+            7: {
+                layer1: [9, 56, 8, 104],
+                layer2: [24, 16, 2652, 1380]
             }
-            html += `</div>`;
-            gameDiv.innerHTML = html;
-            gamesContainer.appendChild(gameDiv);
+        };
+
+        function startBypass(grade) {
+            const nameInput = document.getElementById('operative-name').value;
+            operativeName = nameInput.trim() || "Unknown Operative";
+            showEntryPage(grade);
         }
 
-        // Initialize with one game
-        addGameTemplate();
+        function showEntryPage(grade) {
+            currentGrade = grade;
+            currentLayer = 1;
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('success-page').classList.add('hidden');
+            document.getElementById('entry-page').classList.remove('hidden');
+            document.getElementById('level-indicator').innerText = `CLEARANCE_GRADE_0${grade}`;
+            updateLayerUI();
+            clearInputs();
+        }
 
-        function processAndStart() {
-            const gameBlocks = document.querySelectorAll('.game-setup-block');
-            allGames = [];
+        function updateLayerUI() {
+            const layerIndicator = document.getElementById('layer-indicator');
+            const bypassText = document.getElementById('bypass-text');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (currentLayer === 1) {
+                layerIndicator.innerText = "SECURITY_LAYER: 01";
+                bypassText.innerText = "Primary Bypass Sequence";
+                submitBtn.innerText = "EXECUTE OVERRIDE";
+                for(let i=1; i<=4; i++) document.getElementById(`label-${i}`).innerText = `Key ${i}`;
+            } else {
+                layerIndicator.innerText = "SECURITY_LAYER: 02";
+                bypassText.innerText = "Final Bypass Sequence";
+                submitBtn.innerText = "FINAL AUTHORIZATION";
+                for(let i=1; i<=4; i++) document.getElementById(`label-${i}`).innerText = `Key ${i + 4}`;
+            }
+        }
 
-            let isValid = true;
-            gameBlocks.forEach((block) => {
-                const gameData = { categories: [], words: [] };
-                const catInputs = block.querySelectorAll('.cat-name');
-                const wordInputs = block.querySelectorAll('.word-input');
+        function goHome() {
+            document.getElementById('entry-page').classList.add('hidden');
+            document.getElementById('success-page').classList.add('hidden');
+            document.getElementById('home-page').classList.remove('hidden');
+            document.getElementById('door-status').className = 'status-locked';
+            currentGrade = null;
+            currentLayer = 1;
+            hideFeedback();
+        }
 
-                catInputs.forEach((catInput, i) => {
-                    if (!catInput.value.trim()) isValid = false;
-                    gameData.categories.push({ name: catInput.value.trim(), level: i });
-                    
-                    for (let j = 0; j < 4; j++) {
-                        const wordVal = wordInputs[i * 4 + j].value.trim();
-                        if (!wordVal) isValid = false;
-                        gameData.words.push({ text: wordVal, categoryId: i });
-                    }
-                });
-                allGames.push(gameData);
-            });
+        function clearInputs() {
+            for(let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`key-${i}`);
+                el.value = '';
+                el.classList.remove('error', 'success');
+            }
+        }
 
-            if (!isValid) {
-                alert("Please fill in all categories and words for every round.");
+        function hideFeedback() {
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('hidden');
+        }
+
+        async function validateKeys() {
+            const gradeData = vaultKeys[currentGrade];
+            const targetKeys = currentLayer === 1 ? gradeData.layer1 : gradeData.layer2;
+            
+            const feedback = document.getElementById('feedback');
+            const door = document.getElementById('door-status');
+            const container = document.getElementById('vault-interface');
+            
+            let allCorrect = true;
+            let anyEmpty = false;
+
+            for (let i = 1; i <= 4; i++) {
+                const input = document.getElementById(`key-${i}`);
+                const val = parseInt(input.value);
+                input.classList.remove('error', 'success');
+
+                if (isNaN(val)) {
+                    anyEmpty = true;
+                    allCorrect = false;
+                } else if (val === targetKeys[i-1]) {
+                    input.classList.add('success');
+                } else {
+                    input.classList.add('error');
+                    allCorrect = false;
+                }
+            }
+            
+            if (anyEmpty) {
+                showFeedback('INCOMPLETE DATA: ALL KEYS REQUIRED', 'border-yellow-900/50 bg-yellow-900/20 text-yellow-500');
                 return;
             }
 
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            
-            loadGame(0);
-        }
-
-        function loadGame(index) {
-            currentGameIndex = index;
-            const data = allGames[index];
-            
-            // Reset State
-            currentCategories = data.categories;
-            currentWords = [...data.words];
-            selectedWords = [];
-            mistakesRemaining = 4;
-            solvedCategories = [];
-            isGameOver = false;
-
-            // UI Reset
-            document.getElementById('round-indicator').innerText = `Round ${index + 1} of ${allGames.length}`;
-            document.getElementById('game-status').innerText = "Create four groups of four!";
-            document.getElementById('solved-container').innerHTML = '';
-            document.getElementById('mistakes-ui').classList.remove('hidden');
-            document.getElementById('action-buttons').classList.remove('hidden');
-            document.getElementById('navigation-ui').classList.add('hidden');
-            
-            renderMistakes();
-            shuffleGrid();
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+            if (allCorrect) {
+                if (currentLayer === 1) {
+                    door.className = 'status-layer-1';
+                    showFeedback('LAYER 01 BYPASSED. STANDBY...', 'border-sky-900/50 bg-sky-900/20 text-sky-400');
+                    setTimeout(() => runTransition(2), 1000);
+                } else {
+                    door.className = 'status-unlocked';
+                    showFeedback('FINAL SECURITY BYPASSED', 'border-emerald-900/50 bg-emerald-900/20 text-emerald-400');
+                    setTimeout(() => runTransition(3), 1000);
+                }
+            } else {
+                door.className = 'status-locked';
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 400);
+                showFeedback('ACCESS DENIED: KEY MISMATCH DETECTED', 'border-red-900/50 bg-red-900/20 text-red-400');
             }
         }
 
-        function renderGrid() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+        function generateSecretPhrase() {
+            const verb = verbs[Math.floor(Math.random() * verbs.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const animal = animals[Math.floor(Math.random() * animals.length)];
+            return `${operativeName} ${verb} the ${color} ${animal}`;
+        }
+
+        function runTransition(targetStage) {
+            const overlay = document.getElementById('transition-overlay');
+            const bar = document.getElementById('progress-bar');
+            const mainText = document.getElementById('transition-text');
+            const subText = document.getElementById('transition-subtext');
             
-            currentWords.forEach(word => {
-                const card = document.createElement('div');
-                card.className = `card ${selectedWords.includes(word) ? 'selected' : ''}`;
-                card.innerText = word.text;
-                card.onclick = () => toggleSelect(word);
-                grid.appendChild(card);
-            });
-
-            document.getElementById('submit-btn').disabled = selectedWords.length !== 4 || isGameOver;
-        }
-
-        function toggleSelect(word) {
-            if (isGameOver) return;
-            const index = selectedWords.indexOf(word);
-            if (index > -1) {
-                selectedWords.splice(index, 1);
-            } else if (selectedWords.length < 4) {
-                selectedWords.push(word);
+            if (targetStage === 3) {
+                mainText.innerText = "FINAL DECRYPT IN PROGRESS...";
+                subText.innerText = "RECOVERING CORE DATA ASSETS";
+            } else {
+                mainText.innerText = "DECRYPTING LAYER 01...";
+                subText.innerText = "INITIALIZING LAYER 02 PROTOCOLS";
             }
-            renderGrid();
-        }
 
-        function deselectAll() {
-            selectedWords = [];
-            renderGrid();
-        }
+            overlay.classList.add('active');
+            setTimeout(() => bar.style.width = '100%', 100);
 
-        function shuffleGrid() {
-            shuffleArray(currentWords);
-            renderGrid();
-        }
-
-        function renderMistakes() {
-            const container = document.getElementById('mistakes-container');
-            container.innerHTML = '';
-            for (let i = 0; i < 4; i++) {
-                const dot = document.createElement('span');
-                dot.className = `mistake-dot ${i >= mistakesRemaining ? 'empty' : ''}`;
-                container.appendChild(dot);
-            }
-        }
-
-        function submitGuess() {
-            if (selectedWords.length !== 4 || isGameOver) return;
-
-            const categoryId = selectedWords[0].categoryId;
-            const isCorrect = selectedWords.every(w => w.categoryId === categoryId);
-
-            if (isCorrect) {
-                const solvedCategory = currentCategories[categoryId];
-                solvedCategories.push(solvedCategory);
-                const solvedTexts = selectedWords.map(w => w.text).join(', ');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                bar.style.width = '0%';
                 
-                const solvedDiv = document.createElement('div');
-                solvedDiv.className = `solved-row level-${categoryId}`;
-                solvedDiv.innerHTML = `
-                    <div class="font-bold uppercase text-lg">${solvedCategory.name}</div>
-                    <div class="uppercase text-sm tracking-widest">${solvedTexts}</div>
-                `;
-                document.getElementById('solved-container').appendChild(solvedDiv);
-
-                currentWords = currentWords.filter(w => !selectedWords.includes(w));
-                selectedWords = [];
-                renderGrid();
-
-                if (solvedCategories.length === 4) {
-                    endGame(true);
+                if (targetStage === 2) {
+                    currentLayer = 2;
+                    updateLayerUI();
+                    clearInputs();
+                    hideFeedback();
+                } else {
+                    showFinalSuccess();
                 }
-            } else {
-                const grid = document.getElementById('grid');
-                grid.classList.add('shake');
-                setTimeout(() => grid.classList.remove('shake'), 400);
-
-                mistakesRemaining--;
-                renderMistakes();
-
-                const counts = {};
-                selectedWords.forEach(w => counts[w.categoryId] = (counts[w.categoryId] || 0) + 1);
-                if (Object.values(counts).includes(3)) {
-                    showMessage("One away...");
-                }
-
-                if (mistakesRemaining === 0) {
-                    endGame(false);
-                }
-            }
+            }, 2000);
         }
 
-        function showMessage(msg) {
-            const status = document.getElementById('game-status');
-            const original = status.innerText;
-            status.innerText = msg;
-            setTimeout(() => { if(!isGameOver) status.innerText = original; }, 2000);
+        function showFinalSuccess() {
+            document.getElementById('entry-page').classList.add('hidden');
+            document.getElementById('success-page').classList.remove('hidden');
+            document.getElementById('final-phrase').innerText = generateSecretPhrase();
         }
 
-        function endGame(won) {
-            isGameOver = true;
-            const status = document.getElementById('game-status');
-            status.innerText = won ? "Perfect!" : "Better luck next time!";
-            
-            document.getElementById('mistakes-ui').classList.add('hidden');
-            document.getElementById('action-buttons').classList.add('hidden');
-            
-            if (!won) {
-                revealRemaining();
-            } else {
-                showNavigation();
-            }
-        }
-
-        function revealRemaining() {
-            const unsolvedIds = [0,1,2,3].filter(id => !solvedCategories.find(sc => sc.level === id));
-            unsolvedIds.forEach((id, index) => {
-                setTimeout(() => {
-                    const catWords = currentWords.filter(w => w.categoryId === id);
-                    if (catWords.length === 0) return;
-
-                    const solvedDiv = document.createElement('div');
-                    solvedDiv.className = `solved-row level-${id}`;
-                    solvedDiv.innerHTML = `
-                        <div class="font-bold uppercase text-lg">${currentCategories[id].name}</div>
-                        <div class="uppercase text-sm tracking-widest">${catWords.map(w => w.text).join(', ')}</div>
-                    `;
-                    document.getElementById('solved-container').appendChild(solvedDiv);
-                    currentWords = currentWords.filter(w => w.categoryId !== id);
-                    renderGrid();
-                    
-                    if (index === unsolvedIds.length - 1) {
-                        setTimeout(showNavigation, 1000);
-                    }
-                }, index * 800);
-            });
-        }
-
-        function showNavigation() {
-            document.getElementById('navigation-ui').classList.remove('hidden');
-            const nextBtn = document.getElementById('next-game-btn');
-            
-            if (currentGameIndex >= allGames.length - 1) {
-                nextBtn.innerText = "Final Results";
-                nextBtn.onclick = () => alert("You've finished all rounds!");
-            } else {
-                nextBtn.innerText = `Next Round (${currentGameIndex + 2}/${allGames.length})`;
-                nextBtn.onclick = goToNextGame;
-            }
-        }
-
-        function goToNextGame() {
-            if (currentGameIndex < allGames.length - 1) {
-                loadGame(currentGameIndex + 1);
-            }
+        function showFeedback(message, classes) {
+            const feedback = document.getElementById('feedback');
+            feedback.innerText = message;
+            feedback.className = `mt-6 p-4 rounded-md text-sm text-center border font-bold ${classes}`;
+            feedback.classList.remove('hidden');
         }
     </script>
 </body>
